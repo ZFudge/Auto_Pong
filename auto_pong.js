@@ -15,7 +15,7 @@ game = {
 	active: true
 }
 
-var diff = document.getElementById('diff');
+//var diff = document.getElementById('diff');
 
 ping = {
 	x: canvas.width/2-5,
@@ -80,7 +80,7 @@ ping = {
 			}
 			ping.horizontal.toFixed(4);
 
-			diff.innerHTML = Math.abs((ping.x + ping.size/2) - player.spot);
+			//diff.innerHTML = Math.abs((ping.x + ping.size/2) - player.spot);
 			//console.log('uh');
 			//console.log(ping.x + ping.size/2);
 			//console.log(player.spot);
@@ -98,7 +98,7 @@ ping = {
 			ping.horizontal.toFixed(4);
 
 			var dif = Math.abs((ping.x + ping.size/2) - playerTwo.spot)
-			diff.innerHTML = dif.toFixed(4);
+			//diff.innerHTML = dif.toFixed(4);
 			//console.log('oh');
 			//console.log(ping.x + ping.size/2);
 			//console.log(playerTwo.spot);
