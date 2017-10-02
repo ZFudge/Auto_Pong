@@ -51,15 +51,12 @@ const ball = {
 	// bounces the ball if it hits a well, then applies horizontal and vertical speeds to the ball
 	adjust: function() {
 		if (ball.x < 0) {
-			//console.log('bounce','ball.x: ' + ball.x);
 			ball.horizontal += (ball.horizontal*-2);
 			ball.x = Math.abs(ball.x);
-			//console.log('ball.x: ' + ball.x);
 		} else if (ball.x + ball.size > game.canvas.width) {
 			ball.horizontal -= (ball.horizontal*2);
 			ball.x = game.canvas.width-ball.size-(ball.x-(game.canvas.width-ball.size));
 		}
-
 		ball.x += ball.horizontal;	
 		ball.y += ball.vertical;
 	},
@@ -100,8 +97,7 @@ const ball = {
 		if (ball.y <= 0 || ball.y + ball.size >= game.canvas.height) {
 			(ball.y <= 0) ? game.p1Score.innerHTML++ : game.p2Score.innerHTML++;
 			ball.serve();
-			//document.body.style.backgroundColor = 'blue';;
-			//clearInterval(pongInterval)
+			//document.body.style.backgroundColor = 'blue'; clearInterval(pongInterval);
 		}
 	}
 }
@@ -112,7 +108,7 @@ class Player {
 		this.x = game.canvas.width/2 - game.playerWidth/2;
 		this.width = game.playerWidth;
 		this.height = game.playerHeight;
-		this.horizontal = 0;
+		this.horizontal = 0; // sets horizontal direction
 		// stores the location of the x-axis where the ball will be when intersecting with the player's y axis 
 		this.xInt = false;
 		// this.side stores the random side the player intends to bounce the ball with, true for left, false for right
@@ -134,9 +130,8 @@ class Player {
 		// checks player's xInt location in comparison to which side it intends to bounce the ball with and adjusts player accordingly
 		this.checkBall = function() {
 			if (this.xInt < 0 || this.xInt > game.canvas.width || !this.xInt && (ball.vertical > 0 && ball.y < this.y || ball.vertical < 0 && ball.y > this.y) ) {
-				//console.log('xInt is false');
-				this.dest();
-			} else { //
+				this.setDestination();
+			} else {
 				if (this.side) { // left
 					if (this.x + ball.size/1.5 > this.xInt) {
 						this.horizontal = -game.playerSpeed;
@@ -155,43 +150,30 @@ class Player {
 					}
 				}
 				/* keeps ball centered
-				if (this.x + 22.5 < this.xInt) {
-					this.horizontal = game.playerSpeed;
-				} else if (this.x + 17.5 > this.xInt && (ball.vertical > 0 && ball.y < this.y || ball.vertical < 0 && ball.y > this.y)) {
-					this.horizontal = -game.playerSpeed;
-				} else {
-					this.horizontal = 0;
-				}
+				(this.x + 22.5 < this.xInt) ? this.horizontal = game.playerSpeed : (this.x + 17.5 > this.xInt && (ball.vertical > 0 && ball.y < this.y || ball.vertical < 0 && ball.y > this.y)) ? this.horizontal = -game.playerSpeed : this.horizontal = 0;
 				*/
 			}
 		}
 		// uses the distance from the ball as well as the horizontal and vertical speeds of the ball
 		// to calculate where the ball will intersect with the goal
-		this.dest = function() {
+		this.setDestination = function() {
 			let w = game.canvas.width;
 			let h = ball.horizontal; 
 			let v = Math.abs(ball.vertical);
-			let yD = Math.abs(ball.y - this.y);
-			yD -= ball.size/2;
-			// 
+			let verticalRange = Math.abs(ball.y - this.y);
+			verticalRange -= ball.size/2;
+
 			this.side = Math.random() > 0.5;
 
-			let y = Math.round(yD/v);
+			let y = Math.round(verticalRange/v);
 			let x = ball.x;
 			
 			if (ball.trackline) {
 				ball.line = [];
-				var dot = 0;
-				let b = ball.y < game.canvas.height/2; // upper side
-
-				if (b) {
-					dot = playerTwo.y + playerTwo.height;
-				} else {
-					dot = player.y;
-				}
+				var dot = ball.y + ball.size/2; // used to plot the path the ball will follow. 
 			}
 
-			for(let i=0;i<y;i++) {
+			for (let i = 0; i < y; i++) {
 				if (ball.trackline) {   
 					dot += ball.vertical;
 					ball.line.push(
@@ -202,19 +184,13 @@ class Player {
 				}
 
 				x += h;
-				//bounces line off walls 
-				if (x + ball.size > w || x < 0) {
+				if (x + ball.size > w || x < 0) { // bounces line off walls
 					h += -h*2;
-					if (x < 0) {
-						x += -x*2;
-					} else {
-						x = w-ball.size - (x - (w-ball.size) );
-					}
+					(x < 0) ? x += -x*2 : x = w-ball.size - (x - (w-ball.size) ); // bounce
 				}
 			}
 			this.xInt = Math.round(x + ball.size/2);
 		}
-
 	}
 }
 
@@ -242,9 +218,8 @@ function pong() {
 
 	game.context.fillRect(ball.x,ball.y,ball.size,ball.size);
 
-	if (ball.trackline) {
-		linedraw();
-	}
+	if (ball.trackline) linedraw();
+
 	game.context.fillStyle = '#0F0';
 	game.context.fillRect(ball.x+4,ball.y+4,2,2);
 
@@ -265,28 +240,15 @@ function pong() {
 }
 
 function pushedKey(btn) {
-	if (btn.keyCode === 82) {
-		refresh();
-	}
-	if (btn.keyCode === 37) {
-		player.horizontal = -1;
-	}
-	if (btn.keyCode === 38 || btn.keyCode === 40) {
-		player.horizontal = 0;
-	}
-	if (btn.keyCode === 39) {
-		player.horizontal = 1;
-	}
-	if (btn.keyCode === 76) {
-		ball.trackline = !ball.trackline;
-	}
-
-	if (btn.keyCode === 32) {
-		stopAndGo();
-	}
-	if (btn.keyCode === 84) {
-		test();
-	}
+	if (btn.keyCode === 82) refresh();
+	if (btn.keyCode === 76) ball.trackline = !ball.trackline;
+	if (btn.keyCode === 32) stopAndGo();
+	if (btn.keyCode === 84) test();
+	/* // player arrow keys input
+	if (btn.keyCode === 37) player.horizontal = -1;
+	if (btn.keyCode === 38 || btn.keyCode === 40) player.horizontal = 0;
+	if (btn.keyCode === 39) player.horizontal = 1;
+	*/
 }
 
 function test() {
@@ -294,15 +256,12 @@ function test() {
 }
 
 function stopAndGo() {
-	if (game.active) {
-		clearInterval(pongInterval);
-	} else {
-		pongInterval = setInterval(pong,game.speed);
-	}
+	(game.active) ? clearInterval(pongInterval) : pongInterval = setInterval(pong,game.speed);
 	game.active = !game.active;
 }
 
 function refresh() {
+	ball.line = [];
 	ball.serve();
 	game.p1Score.innerHTML = 0;
 	game.p2Score.innerHTML = 0;
@@ -311,5 +270,6 @@ function refresh() {
 }
 
 game.canvas.onclick = function() {
+	if (ball.trackline) ball.line = [];
 	ball.trackline = !ball.trackline;
 }
