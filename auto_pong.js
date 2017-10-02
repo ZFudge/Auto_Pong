@@ -1,23 +1,25 @@
 document.addEventListener("keydown",pushedKey);
 
-game = {
+const game = {
 	canvas: document.getElementById('canv'),
 	context: null,
 	speed: 10,
 	bounces: 0,
-	score: document.getElementById('score'),
+	bounce: document.getElementById('bounce'),
 	playerSpeed: 2,
 	playerWidth: 40,
 	playerHeight: 10,
 	playerTwoPos: 20,
 	playerOnePos: 320,
+	p2Score: document.getElementById('p2'),
+	p1Score: document.getElementById('p1'),
 	active: true
 }
 game.context = game.canvas.getContext('2d');
 
-let diff = document.getElementById('diff');
+const diff = document.getElementById('diff');
 
-ball = {
+const ball = {
 	x: game.canvas.width/2-5,
 	y: game.canvas.height/2-5,
 	vertical: 0,
@@ -63,61 +65,43 @@ ball = {
 	},
 	// checks to see if the ball has hit a player
 	collisionCheck: function() {
-		//if (ball.x >= player.x && ball.x <= player.x + player.width && ball.y + ball.size >= player.y && ball.y <= player.y + player.height) {
 		if ( (ball.x >= player.x && ball.x <= player.x + player.width && ball.y + ball.size >= player.y && ball.y + ball.size <= player.y + player.height) || 
 			(ball.x + ball.size >= player.x && ball.x + ball.size <= player.x + player.width && ball.y + ball.size >= player.y && ball.y + ball.size <= player.y + player.height)) {
+
 			ball.vertical -= (ball.vertical*2);
-
-			/*
-			if (ball.y < playerTwo.y + playerTwo.height) {
-				ball.y = ball.y + ((playerTwo.y + playerTwo.height - ball.y) * 2);
-			} else if (ball.y + ball.size > player.y) {
-				ball.y = ball.y - (( (ball.y + ball.size) - player.y) * 2);
-			}
-			*/
-
 			ball.y = ball.y - (( (ball.y + ball.size) - player.y) * 2);
-
 			let ballRange = (ball.x + ball.size/2 - player.x - 20) / 10;
 			if (Math.abs(ball.horizontal < 15)) {
 				ball.horizontal += ballRange;
 			}
 			ball.horizontal.toFixed(4);
 
-			//diff.innerHTML = Math.abs((ball.x + ball.size/2) - player.xInt);
-
 			player.xInt = false;
+
 			game.bounces++;
-			game.score.innerHTML = game.bounces;
+			game.bounce.innerHTML = game.bounces;
 		} else if ((ball.x >= playerTwo.x && ball.x <= playerTwo.x + playerTwo.width && ball.y >= playerTwo.y && ball.y <= playerTwo.y + playerTwo.height) ||
 			(ball.x + ball.size >= playerTwo.x && ball.x + ball.size <= playerTwo.x + playerTwo.width && ball.y >= playerTwo.y && ball.y <= playerTwo.y + playerTwo.height)) {
+
 			ball.vertical += (ball.vertical*-2);
-
 			ball.y = ball.y + ((playerTwo.y + playerTwo.height - ball.y) * 2);
-
 			let ballRange = (ball.x + ball.size/2 - playerTwo.x - 20) / 10;
 			ball.horizontal += ballRange;
 			ball.horizontal.toFixed(4);
 
-			//diff.innerHTML = Math.abs((ball.x + ball.size/2) - playerTwo.xInt)
-
 			playerTwo.xInt = false;
+
 			game.bounces++;
-			game.score.innerHTML = game.bounces;
+			game.bounce.innerHTML = game.bounces;
 		}
-		// ball.vertical += -ball.vertical * 2;
 	},
+	// checks if ball has scored on a player
 	checkScore: function() {
-		if (ball.y <= 0) {
+		if (ball.y <= 0 || ball.y + ball.size >= game.canvas.height) {
+			(ball.y <= 0) ? game.p1Score.innerHTML++ : game.p2Score.innerHTML++;
 			ball.serve();
-			document.body.style.backgroundColor = 'blue';
-			//game.active = !game.active;
-			clearInterval(pongInterval)
-		} else if (ball.y + ball.size >= game.canvas.height) {
-			ball.serve();
-			document.body.style.backgroundColor = 'blue';
-			//game.active = !game.active;
-			clearInterval(pongInterval)
+			//document.body.style.backgroundColor = 'blue';;
+			//clearInterval(pongInterval)
 		}
 	}
 }
@@ -131,7 +115,7 @@ class Player {
 		this.horizontal = 0;
 		// stores the location of the x-axis where the ball will be when intersecting with the player's y axis 
 		this.xInt = false;
-
+		// this.side stores the random side the player intends to bounce the ball with, true for left, false for right
 		this.side = null;
 		// checks for contact with walls
 		this.checkSide = function() {
@@ -197,27 +181,28 @@ class Player {
 			
 			if (ball.trackline) {
 				ball.line = [];
-				var a = 0;
+				var dot = 0;
 				let b = ball.y < game.canvas.height/2; // upper side
 
 				if (b) {
-					a = playerTwo.y + playerTwo.height;
+					dot = playerTwo.y + playerTwo.height;
 				} else {
-					a = player.y;
+					dot = player.y;
 				}
 			}
 
 			for(let i=0;i<y;i++) {
 				if (ball.trackline) {   
-					a += ball.vertical;
+					dot += ball.vertical;
 					ball.line.push(
 						{
-							xa: x + ball.size/2,
-							ya: a
+							xdot: x + ball.size/2,
+							ydot: dot
 						});
 				}
 
 				x += h;
+				//bounces line off walls 
 				if (x + ball.size > w || x < 0) {
 					h += -h*2;
 					if (x < 0) {
@@ -237,15 +222,15 @@ class Player {
 function linedraw() {
 	for(let prop in ball.line) {
 		game.context.fillStyle = '#0FF';
-		game.context.fillRect(ball.line[prop].xa,ball.line[prop].ya,1,1);
+		game.context.fillRect(ball.line[prop].xdot,ball.line[prop].ydot,1,1);
 	}
 }
 
-let playerTwo = new Player(game.playerTwoPos);
-let player = new Player(game.playerOnePos);
+const playerTwo = new Player(game.playerTwoPos);
+const player = new Player(game.playerOnePos);
 
 ball.serve();
-pongInterval = setInterval(pong,game.speed);
+let pongInterval = setInterval(pong,game.speed);
 
 function pong() {
 	game.context.fillStyle = 'black';
@@ -276,7 +261,6 @@ function pong() {
 	ball.adjust();
 	ball.collisionCheck();
 	ball.checkScore();
-
 	//console.log('pong');
 }
 
@@ -284,26 +268,28 @@ function pushedKey(btn) {
 	if (btn.keyCode === 82) {
 		refresh();
 	}
-	
 	if (btn.keyCode === 37) {
 		player.horizontal = -1;
-	} else if (btn.keyCode === 38 || btn.keyCode === 40) {
+	}
+	if (btn.keyCode === 38 || btn.keyCode === 40) {
 		player.horizontal = 0;
-	} else if (btn.keyCode === 39) {
+	}
+	if (btn.keyCode === 39) {
 		player.horizontal = 1;
-	} else if (btn.keyCode === 76) {
+	}
+	if (btn.keyCode === 76) {
 		ball.trackline = !ball.trackline;
 	}
 
 	if (btn.keyCode === 32) {
 		stopAndGo();
-	} else if (btn.keyCode === 84) {
+	}
+	if (btn.keyCode === 84) {
 		test();
 	}
 }
 
 function test() {
-	console.log('test');
 	document.body.style.backgroundColor = 'blue';
 }
 
@@ -318,9 +304,11 @@ function stopAndGo() {
 
 function refresh() {
 	ball.serve();
-	document.body.style.backgroundColor = 'white';
+	game.p1Score.innerHTML = 0;
+	game.p2Score.innerHTML = 0;
+	game.bounce.innerHTML = 0;
+	game.bounces = 0;
 }
-
 
 game.canvas.onclick = function() {
 	ball.trackline = !ball.trackline;
