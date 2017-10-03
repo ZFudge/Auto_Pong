@@ -30,17 +30,11 @@ const ball = {
 	trackline: false,
 	// randomizes the direction of a freshly served ball
 	serve: function() {
-		let rand1 = Math.random();
-		let rand2 = Math.random();
 		ball.vertical = game.playerSpeed * 1.5;
-		ball.horizontal = game.playerSpeed * 1.5;
+		ball.horizontal = game.playerSpeed * (Math.random() * 3);
 
-		if (rand1 < 0.5) {
-			ball.vertical += -ball.vertical*2;
-		}
-		if (rand2 < 0.5) {
-			ball.horizontal += -ball.horizontal*2;
-		}
+		if (Math.random() < 0.5) ball.vertical += -ball.vertical*2;
+		if (Math.random() < 0.5) ball.horizontal += -ball.horizontal*2;
 
 		ball.x = game.canvas.width/2-5;
 		ball.y = game.canvas.height/2-5;
