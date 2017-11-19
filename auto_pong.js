@@ -127,7 +127,8 @@ class Player {
 				this.setDestination();
 			} else {
 				if (this.side) { // left
-					if (this.x + ball.size/1.5 > this.xInt) {
+					if (this.x + ball.size/1.5 > this.xInt && typeof this.xInt == 'number') {
+						console.log('here');
 						this.horizontal = -game.playerSpeed;
 					} else if (this.x + ball.size*1.5 < this.xInt && (ball.vertical > 0 && ball.y < this.y || ball.vertical < 0 && ball.y > this.y)) {
 						this.horizontal = game.playerSpeed;
@@ -149,7 +150,7 @@ class Player {
 			}
 		}
 		// uses the distance from the ball as well as the horizontal and vertical speeds of the ball
-		// to calculate where the ball will intersect with the goal
+		// to calculate where the ball will intersect with the player
 		this.setDestination = function() {
 			let w = game.canvas.width;
 			let h = ball.horizontal; 
@@ -157,14 +158,16 @@ class Player {
 			let verticalRange = Math.abs(ball.y - this.y);
 			verticalRange -= ball.size/2;
 
+			//randomly determines which side the player will hit the ball with
 			this.side = Math.random() > 0.5;
 
 			let y = Math.round(verticalRange/v);
 			let x = ball.x;
+			let dot;
 			
 			if (ball.trackline) {
 				ball.line = [];
-				var dot = ball.y + ball.size/2; // used to plot the path the ball will follow. 
+				dot = ball.y + ball.size/2; // used to plot the path the ball will follow. 
 			}
 
 			for (let i = 0; i < y; i++) {
@@ -191,13 +194,15 @@ class Player {
 // draws the path the ball will follow
 function linedraw() {
 	for(let prop in ball.line) {
-		game.context.fillStyle = '#0FF';
+		game.context.fillStyle = '#0F0';
 		game.context.fillRect(ball.line[prop].xdot,ball.line[prop].ydot,1,1);
 	}
 }
 
 const playerTwo = new Player(game.playerTwoPos);
+playerTwo.name = 'player-two';
 const player = new Player(game.playerOnePos);
+player.name = 'player-one';
 
 ball.serve();
 let pongInterval = setInterval(pong,game.speed);
