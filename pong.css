@@ -1,0 +1,17 @@
+body {
+	text-align: center;
+	font-family: sans-serif;
+	font-size: 15px;
+	-moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-color: black;
+}
+
+canvas {
+	margin-top: 80px;
+  border: 2px solid white;
+  border-radius: 1px;
+  background: transparent;
+}
