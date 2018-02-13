@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>ZFudge - Pong</title>
+	<title>Zach Fudge - Pong</title>
 	<meta charset="UTF-8" />
 	<meta name='viewport' content=' width=device-width, initial-scale=0.75, maximum-scale=0.75, user-scalable=0' />
 	<link rel="shortcut icon" type="image/x-icon" href="pong.ico">
 	<link rel='stylesheet' tyle='text/css' href='pong.css'>
 </head>
 <body>
-	<canvas id='canv' width='200px' height='400'></canvas>
-	<div>
-		<div>Bounces:<div id='bounce' style='display:inline;'>0</div>
-		</div>
-		<div>P2:<div id='p2' style='display:inline;'>0</div> 
-		</div>
-		<div>P1:<div id='p1' style='display:inline;'>0</div>
+	<div id="outer-container">
+		<div id="pong-container">
+			<canvas id='pong-canvas' width='400' height='200'></canvas>
+			<div id="stats-container">
+				<span id='bounce'>0</span>
+				<span id='p2'>0</span> 
+				<span id='p1'>0</span>
+			</div>
 		</div>
 	</div>
 	<script src='pong.js'></script>
