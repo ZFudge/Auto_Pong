@@ -26,7 +26,7 @@ body {
   background-color: #111;
   display: grid;
   grid-template-columns: 1em 24em 1em;
-  grid-template-rows: 1em 12em 1em 5em 1em;
+  grid-template-rows: 1em 12em 1em 2em 1em;
   box-shadow: inset 0 -8px 20px 0 #000, inset -3px 5px 5px 0 #88888888, inset 3px 5px 5px 0 #88888888, 0 2px 2px #000
 }
 
@@ -40,9 +40,15 @@ body {
 
 #stats-container {
   grid-area: 4 / 2 / 5 / 3;
-  color: white;
+  color: #00ff1f;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
 
-span {
-  border: 1px solid white;
+.display {
+  box-shadow: inset 0 0 4px 0 #FFF, 0 1px 5px 1px #FFF;
+  padding: 0.25em 1em;
+  border-radius: 1em;
+  font-family: 'Dhurjati', sans-serif;
 }
