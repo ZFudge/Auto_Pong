@@ -2,7 +2,7 @@ document.addEventListener("keydown",pushedKey);
 
 const pong = {
 	active: true,
-	ms: 50,
+	ms: 25,
 	canvas: document.getElementById('pong-canvas'),
 	bounce: document.getElementById('bounce'),
 	bounces: 0,
@@ -59,21 +59,15 @@ const ball = {
 	y: pong.canvas.height/2-5,
 	vertical: 0,
 	horizontal: 0,
-	size: 10,
+	size: 15,
 	line: [],
 	trackline: false,	// determines if the ball's path will be stored in the ball.line array
-	serve: function() {
-		ball.vertical = 1 + Math.random()
-		ball.horizontal = 1 + Math.random()
-
-		if (Math.random() < 0.5) ball.vertical *= -1;
-		if (Math.random() < 0.5) ball.horizontal *= -1;
-
-		ball.x = pong.canvas.width/2 - ball.size/2;
-		ball.y = pong.canvas.height/2 - ball.size/2;
-
-		player.yInt = false;
-		playerTwo.yInt = false;
+	serve: () => {
+		ball.vertical = (Math.random() < 0.5) ? 1 + Math.random() : (1 + Math.random()) * -1;
+		ball.horizontal = (Math.random() < 0.5) ? 1 + Math.random() : (1 + Math.random()) * -1;
+		ball.x = pong.canvas.width / 2 - ball.size / 2;
+		ball.y = pong.canvas.height / 2 - ball.size / 2;
+		player.yInt = playerTwo.yInt = false;
 	},
 	// bounces the ball if it hits a well, then applies horizontal and vertical speeds to the ball
 	adjust: function() {
@@ -89,15 +83,15 @@ const ball = {
 	},
 	collisionCheck: function(object) {
 		console.log(object);
-		if (ball.y + ball.size/2 >= object.y && 
-			ball.y + ball.size/2 <= object.y + object.height && 
+		if (ball.y + ball.size-1 >= object.y && 
+			ball.y + ball.size-1 <= object.y + object.height && 
 			((ball.x >= object.x && ball.x <= object.x + object.width) || (ball.x + ball.size >= object.x && ball.x + ball.size <= object.x + object.width) )
 			) {
-			console.log('OH YEAH', ball.x);
+			console.log('X', ball.x);
 			ball.horizontal *= -1;
 			// ball.x = ball.x - (( (ball.x + ball.size) - player.x) * 2);
 			(ball.x < pong.canvas.width/2) ? ball.x += (Math.abs(20 + pong.playerWidth - ball.x)) : ball.x -= Math.abs((pong.canvas.width-20-pong.playerWidth) - (ball.x + ball.size));
-			console.log('OH NO?', ball.x);
+			console.log('X?', ball.x);
 			let ballRange = (ball.y + ball.size/2 - player.y - 20) / 10;
 			if (Math.abs(ball.vertical < 15)) {
 				ball.vertical += ballRange;
@@ -108,15 +102,6 @@ const ball = {
 
 			pong.bounces++;
 			pong.bounce.innerHTML = pong.bounces;
-		} else if ((ball.y >= playerTwo.y && ball.y + ball.size <= playerTwo.y + playerTwo.height && ball.x >= playerTwo.x && ball.x <= playerTwo.x + playerTwo.width) ||
-			(ball.y + ball.size >= playerTwo.y && ball.y + ball.size <= playerTwo.y + playerTwo.height && ball.x >= playerTwo.x && ball.x <= playerTwo.x + playerTwo.width)) {
-			console.log('collided', ball.x);
-
-			ball.horizontal *= -1;
-			ball.x = ball.x + ((playerTwo.x + playerTwo.height - ball.x) * 2);
-			let ballRange = (ball.y + ball.size/2 - playerTwo.y - 20) / 10;
-			ball.vertical += ballRange;
-			ball.vertical.toFixed(4);
 		}
 	},
 	// checks if ball has scored on a player
